@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Terminal.Entity.Passenger;
 using Terminal.Entity.Trip.Enum;
 using Terminal.Entity.Trip.Repository;
+using Terminal.Entity.Trip.Service;
 using Terminal.Entity.Trip.ValueObject;
 using Route = Terminal.Entity.Trip.ValueObject.Route;
 
@@ -14,6 +15,7 @@ namespace Terminal.Entity.Trip
     internal abstract class Trip
     {
         private readonly ITripRepositpry _repository = new TripRepositpry();
+        private readonly ITripService _service= new TripService();
         public Trip()
         {
 
@@ -39,27 +41,26 @@ namespace Terminal.Entity.Trip
         }
         public abstract void BookTicket(List<int> seetNumbers,int passengerId);
         public abstract void BuyTicket(List<int> seetNumbers, int passengerId);
-        public virtual void ChangeBookTicketToBuyTicket(int passengerId)
+        public virtual async void ChangeBookTicketToBuyTicket(Ticket ticket)
         {
-            var ticket=Tickets.FirstOrDefault(t => t.PassengerId == passengerId);
             if(ticket != null && ticket.Seats.First().SeatType == SeatType.Booked && DateTime.Now < Time)
             {
-                foreach(var seat in ticket.Seats) { seat.ChangeSeatType(SeatType.Bought); }
+                foreach(var seat in ticket.Seats) 
+                { 
+                    seat.ChangeSeatType(SeatType.Bought);
+                    _repository.SaveSeatUpdat(seat);
+                }
+                await _repository.SaveChanges();
                 ticket.ChangePaymentTicket( ticket.TotalPrice);
-                _repository.SaveChanges();
+                _repository.SaveTicketUpdat(ticket);
+                await _repository.SaveChanges();
             }
 
         }
-        public virtual void TakeBackTicket(int passengerId)
+        public virtual async void CancelingTicket(Ticket ticket)
         {
-            var ticket = Tickets.FirstOrDefault(t => t.PassengerId == passengerId);
             if (ticket != null && DateTime.Now < Time)
             {
-                while(ticket.Seats.Count > 0)
-                {
-                    ticket.Seats.Remove(ticket.Seats.Last());
-                }
-              
                 if (ticket.Seats.First().SeatType == SeatType.Booked)
                 {
                     ticket.ChangePaymentTicket(ticket.Payment * 2 / 10);
@@ -68,9 +69,15 @@ namespace Terminal.Entity.Trip
                 {
                     ticket.ChangePaymentTicket(ticket.TotalPrice / 10);
                 }
-                _repository.SaveChanges();
+                 _repository.SaveTicketUpdat(ticket);
+                Thread.Sleep(1000);
+                _service.DeleteSeats(ticket);
+
+         
+                _repository.SaveChange();
             }
         }
         public abstract void ShowSeet();
+        public abstract int CalEmptySeatNembers();
     }
 }

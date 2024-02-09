@@ -43,6 +43,16 @@ namespace Terminal.Entity.Trip
             }
         }
 
+        public override int CalEmptySeatNembers()
+        {
+            var NotEmptySeats = 0;
+            foreach (var ticket in Tickets)
+            {
+                NotEmptySeats += ticket.Seats.Count;
+            }
+            return 30 - NotEmptySeats;
+        }
+
         public override void ShowSeet()
         {
             var seats = _service.ConvertTicketsSeatsListToSeatsList(Tickets);

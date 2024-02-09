@@ -45,6 +45,34 @@ namespace Terminal.Migrations
                     b.ToTable("Buses", "Bus");
                 });
 
+            modelBuilder.Entity("Terminal.Entity.Log.Log", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal>("Catched")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Refunds")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TripId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Logs");
+                });
+
             modelBuilder.Entity("Terminal.Entity.Passenger.Passenger", b =>
                 {
                     b.Property<int>("Id")
@@ -102,11 +130,12 @@ namespace Terminal.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Payment")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<decimal>("TotalPrice")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<int>("TripId")
                         .HasColumnType("int");

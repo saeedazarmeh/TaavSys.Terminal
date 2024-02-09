@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Terminal.Entity.Trip.Repository;
 using Terminal.Persistant;
 
 namespace Terminal.Entity.Trip.Service
@@ -6,6 +7,7 @@ namespace Terminal.Entity.Trip.Service
     internal class TripService:ITripService
     {
         EfDbContext db=new EfDbContext();
+        private readonly ITripRepositpry _tripRepository=new TripRepositpry();
         public bool CheckSeatsBeEmpty(List<int> seatsNumber,HashSet<Ticket> tickets)
         {
             var seats = ConvertTicketsSeatsListToSeatNumbers(tickets);
@@ -63,6 +65,12 @@ namespace Terminal.Entity.Trip.Service
                 }
             }
             return seats;
+        }
+        public void DeleteSeats(Ticket ticket)
+        {
+            db.Seats.RemoveRange(ticket.Seats);
+            _tripRepository.SaveChange();
+
         }
     }
 }

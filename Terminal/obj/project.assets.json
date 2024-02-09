@@ -2019,11 +2019,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\Job-programing\\Taav Sys Course\\TAAV_Tests\\Ef\\Terminal\\Terminal\\Terminal.csproj",
+      "projectUniqueName": "F:\\Job-programing\\Taav Sys Course\\TAAV_Tests\\Ef\\TaavSys.Terminal\\TaavSystem.Terminal\\Terminal\\Terminal.csproj",
       "projectName": "Terminal",
-      "projectPath": "F:\\Job-programing\\Taav Sys Course\\TAAV_Tests\\Ef\\Terminal\\Terminal\\Terminal.csproj",
+      "projectPath": "F:\\Job-programing\\Taav Sys Course\\TAAV_Tests\\Ef\\TaavSys.Terminal\\TaavSystem.Terminal\\Terminal\\Terminal.csproj",
       "packagesPath": "C:\\Users\\Saeed\\.nuget\\packages\\",
-      "outputPath": "F:\\Job-programing\\Taav Sys Course\\TAAV_Tests\\Ef\\Terminal\\Terminal\\obj\\",
+      "outputPath": "F:\\Job-programing\\Taav Sys Course\\TAAV_Tests\\Ef\\TaavSys.Terminal\\TaavSystem.Terminal\\Terminal\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

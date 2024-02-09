@@ -12,6 +12,10 @@ namespace Terminal.Entity.Trip.Repository
         Task<List<Trip>> GetTrips();
         Task<Trip> GetTrip(int tripId);
         Task<Trip> GetTripByTickets(int tripId);
+        void SaveSeatUpdat(Seat seat);
+        void SaveTicketUpdat(Ticket ticket);
+
         Task SaveChanges();
+        void SaveChange();
     }
 }

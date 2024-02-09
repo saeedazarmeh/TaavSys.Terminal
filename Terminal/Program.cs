@@ -1,6 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.VisualBasic;
+using System.Collections.Generic;
+using Terminal.Common;
 using Terminal.Entity.Bus;
 using Terminal.Entity.Bus.Repository;
+using Terminal.Entity.Log;
+using Terminal.Entity.Log.Repository;
 using Terminal.Entity.Passenger;
 using Terminal.Entity.Passenger.Repository;
 using Terminal.Entity.Trip;
@@ -10,6 +15,8 @@ using Terminal.Entity.Trip.ValueObject;
 IBusRepository _bus = new BusRepository();
 ITripRepositpry _trip = new TripRepositpry();
 IPassengerRepository _passenger = new PassengerRepository();
+ILogRepository _Log = new LogRepository();
+
 while (true)
 {
 
@@ -46,10 +53,7 @@ while (true)
                 Enum.TryParse(Console.ReadLine(), out Terminal.Entity.Bus.Enum.Type type);
                 Console.WriteLine("Choose a bus By It's Id");
                 var buses = await _bus.GetBuses(type);
-                foreach (var busItem in buses)
-                {
-                    Console.WriteLine($"Id:{busItem.Id} Type:{busItem.Type} Driver:{busItem.DriverName}\n");
-                }
+                Utility.ShowBuses(buses);
                 var choosedBusId = int.Parse(Console.ReadLine());
                 var choosedBus = await _bus.GetBus(choosedBusId);
                 Console.WriteLine("Enter Origin of Trip");
@@ -80,12 +84,7 @@ while (true)
         case 3:
             {
                 var trips = await _trip.GetTrips();
-                var i = 0;
-                foreach (var trip in trips)
-                {
-                    i++;
-                    Console.WriteLine($"number:{i} TripId:{trip.Id} \nBusName:{trip.Bus.Name} BusType:{trip.Bus.Type} BusDriverName:{trip.Bus.DriverName}\n origin:{trip.Route.Origin} destination:{trip.Route.Destination}\n");
-                }
+                Utility.ShowTrips(trips);
                 Console.WriteLine("Choose a trip By It's Id");
                 var tripId = int.Parse(Console.ReadLine());
                 var choosedTrip = await _trip.GetTripByTickets(tripId);
@@ -108,12 +107,7 @@ while (true)
                     passenger = await _passenger.GetPassengerByPhone(phone);
                 }
                 var trips = await _trip.GetTrips();
-                var i = 0;
-                foreach (var trip in trips)
-                {
-                    i++;
-                    Console.WriteLine($"number:{i} TripId:{trip.Id} \nBusName:{trip.Bus.Name} BusType:{trip.Bus.Type} BusDriverName:{trip.Bus.DriverName}\n origin:{trip.Route.Origin} destination:{trip.Route.Destination}\n");
-                }
+                Utility.ShowTrips(trips);
                 Console.WriteLine("Choose a trip By It's Id");
                 var tripId = int.Parse(Console.ReadLine());
                 var choosedTrip = await _trip.GetTripByTickets(tripId);
@@ -128,7 +122,11 @@ while (true)
                     condition = Console.ReadLine() != "1" ? false : true;
                 }
                 choosedTrip.BookTicket(seatNumbers, passenger.Id);
+                var ticket = choosedTrip.Tickets.Last();
                 _trip.SaveChanges();
+                var log = new Log(tripId, ticket.Id, Terminal.Entity.Log.Enum.Status.Booked, ticket.Payment,0);
+                _Log.Add(log);
+                _Log.SaveChanges();
             }
             break;
         case 5:
@@ -146,12 +144,7 @@ while (true)
                     passenger = await _passenger.GetPassengerByPhone(phone);
                 }
                 var trips = await _trip.GetTrips();
-                var i = 0;
-                foreach (var trip in trips)
-                {
-                    i++;
-                    Console.WriteLine($"number:{i} TripId:{trip.Id} \nBusName:{trip.Bus.Name} BusType:{trip.Bus.Type} BusDriverName:{trip.Bus.DriverName}\n origin:{trip.Route.Origin} destination:{trip.Route.Destination}\n");
-                }
+                Utility.ShowTrips(trips);
                 Console.WriteLine("Choose a trip By It's Id");
                 var tripId = int.Parse(Console.ReadLine());
                 var choosedTrip = await _trip.GetTripByTickets(tripId);
@@ -166,8 +159,76 @@ while (true)
                     condition = Console.ReadLine() != "1" ? false : true;
                 }
                 choosedTrip.BuyTicket(seatNumbers, passenger.Id);
+                var ticket = choosedTrip.Tickets.Last();
                 _trip.SaveChanges();
+                var log = new Log(tripId, ticket.Id, Terminal.Entity.Log.Enum.Status.Bougth, ticket.Payment, 0);
+                _Log.Add(log);
+                _Log.SaveChanges();
             }
             break;
+        case 6:
+            {
+                Console.WriteLine("Enter Passenger PhoneNumber");
+                var phone = Console.ReadLine();
+                var passenger = await _passenger.GetPassengerWithTicketsAndTrip(phone);
+                Utility.ShowPassengerTickets(passenger);
+                Console.WriteLine("Choose a ticket By It's Id");
+                var ticketId = int.Parse(Console.ReadLine());
+                var choosedTicket = passenger.Tickets.FirstOrDefault(t => t.Id == ticketId);
+                var AddedMoney = choosedTicket.TotalPrice - choosedTicket.Payment;
+                var choosedTrip = await _trip.GetTrip(choosedTicket.TripId);
+                choosedTrip.ChangeBookTicketToBuyTicket(choosedTicket);
+                await _trip.SaveChanges();
+                var log = new Log(choosedTicket.TripId, ticketId, Terminal.Entity.Log.Enum.Status.ChangeToBought, AddedMoney, 0);
+                _Log.Add(log);
+                _Log.SaveChanges();
+            }
+            break;
+        case 7:
+            {
+                Console.WriteLine("Enter Passenger PhoneNumber");
+                var phone = Console.ReadLine();
+                var passenger = await _passenger.GetPassengerWithTicketsAndTrip(phone);
+                Utility.ShowPassengerTickets(passenger);
+                Console.WriteLine("Choose a ticket By It's Id");
+                var ticketId = int.Parse(Console.ReadLine());
+                var choosedTicket = passenger.Tickets.FirstOrDefault(t => t.Id == ticketId);
+                var OldPayment=choosedTicket.Payment;
+                var choosedTrip = await _trip.GetTrip(choosedTicket.TripId);
+                var ticketType=choosedTicket.Seats.Last().SeatType;
+                choosedTrip.CancelingTicket(choosedTicket);
+                _trip.SaveChanges();
+                var takedBack=choosedTicket.Payment-OldPayment;
+                Terminal.Entity.Log.Enum.Status status;
+                if(ticketType == Terminal.Entity.Trip.Enum.SeatType.Bought) 
+                { 
+                    status = Terminal.Entity.Log.Enum.Status.BougthCancel;
+                }
+                else
+                {
+                    status = Terminal.Entity.Log.Enum.Status.BookedCancel;
+                }
+                var log = new Log(choosedTicket.TripId, ticketId, status, 0, takedBack);
+                _Log.Add(log);
+                _Log.SaveChanges();
+            }
+            break;
+        case 8:
+            {
+                var trips = await _trip.GetTrips();
+                Utility.ShowTrips(trips);
+                Console.WriteLine("Choose a trip By It's Id");
+                var tripId = int.Parse(Console.ReadLine());
+                var choosedTrip=await _trip.GetTripByTickets(tripId);
+                var logs=_Log.GetTripLog(tripId);
+                Utility.ShowTrioResult(logs,choosedTrip);
+            }
+            break;
+        case 9:
+            {
+                Environment.Exit(0);
+            }
+            break;
+
     }
 }

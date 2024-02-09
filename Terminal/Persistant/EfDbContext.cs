@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terminal.Entity.Bus;
+using Terminal.Entity.Log;
 using Terminal.Entity.Passenger;
 using Terminal.Entity.Trip;
 
@@ -21,6 +22,7 @@ namespace Terminal.Persistant
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Seat> Seats { get; set; }
+        public DbSet<Log> Logs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelbuilder)
         {
             modelbuilder.ApplyConfigurationsFromAssembly(typeof(EfDbContext).Assembly);

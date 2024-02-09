@@ -12,5 +12,6 @@ namespace Terminal.Entity.Trip.Service
         List<int> ConvertTicketsSeatsListToSeatNumbers(HashSet<Ticket> tickets);
         string ShowSeatDet(int seatNumber, List<Seat> seats);
         List<Seat> ConvertTicketsSeatsListToSeatsList(HashSet<Ticket> tickets);
+        public void DeleteSeats(Ticket ticket);
     }
 }

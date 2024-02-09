@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ttb3k7SP8LHrNcjqQEVL2RhCab4fF1ao//QxIFjRU9+CC3UnFw0d+kBHyVhY0rwP5xKx5iICOeH171iWxcocFw==",
+  "dgSpecHash": "umpGqzaVLbDfcYdD2lqN5o7riusLTsVZQOOMWjtYULKb2wMLOmhFf18VbBbm+pUfbznNOAMS+Uvz8aJ/+HwKVQ==",
   "success": true,
-  "projectFilePath": "F:\\Job-programing\\Taav Sys Course\\TAAV_Tests\\Ef\\Terminal\\Terminal\\Terminal.csproj",
+  "projectFilePath": "F:\\Job-programing\\Taav Sys Course\\TAAV_Tests\\Ef\\TaavSys.Terminal\\TaavSystem.Terminal\\Terminal\\Terminal.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Saeed\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Saeed\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",

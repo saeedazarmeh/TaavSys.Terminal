@@ -30,5 +30,20 @@ namespace Terminal.Entity.Trip.Repository
         {
             await db.SaveChangesAsync();
         }
+        public void SaveChange()
+        {
+             db.SaveChangesAsync();
+        }
+
+        public void SaveSeatUpdat(Seat seat)
+        {
+             db.Entry(seat).State = EntityState.Modified;
+        }
+
+      
+        public void SaveTicketUpdat(Ticket ticket)
+        {
+            db.Entry(ticket).State = EntityState.Modified;
+        }
     }
 }

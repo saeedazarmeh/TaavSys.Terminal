@@ -11,7 +11,7 @@ namespace Terminal.Entity.Passenger.Repository
         Task AddPassenger(Passenger passenger);
         Task<Passenger> GetPassenger(int passengerId);
         Task<Passenger> GetPassengerByPhone(string phone);
-        Task<Passenger> GetPassengerByTickets(int passengerId);
+        Task<Passenger> GetPassengerWithTicketsAndTrip(string phone);
         Task SaveChanges();
     }
 }

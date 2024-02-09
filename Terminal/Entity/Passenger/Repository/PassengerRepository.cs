@@ -20,9 +20,10 @@ namespace Terminal.Entity.Passenger.Repository
             return await db.Passengers.FirstOrDefaultAsync(p => p.PhoneNumber == phone);
         }
 
-        public async Task<Passenger> GetPassengerByTickets(int passengerId)
+        public async Task<Passenger> GetPassengerWithTicketsAndTrip(string phone)
         {
-            return await db.Passengers.Include(p=>p.Tickets).FirstOrDefaultAsync(p => p.Id == passengerId);
+            return await db.Passengers.Include(p => p.Tickets).ThenInclude(t => t.Seats)
+                .Include(p=>p.Tickets).ThenInclude(t=>t.Trip).FirstOrDefaultAsync(p => p.PhoneNumber == phone );
         }
         public async Task SaveChanges()
         {
